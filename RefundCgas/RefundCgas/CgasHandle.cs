@@ -19,6 +19,11 @@ namespace RefundCgas
                 url=httpHelper.MakeRpcUrlPost(Program.WalletApi, "getCagsLockUtxo", out postdata,new JValue(address));
             var result = httpHelper.HttpPost(url, postdata);
             JObject joResult = JObject.Parse(result);
+            if (joResult.ContainsKey("error"))
+            {
+                Log.Error(joResult.ToString());
+                return;
+            }
             JArray jaresult = (JArray)joResult["result"];
             for (var i = 0; i < jaresult.Count; i++)
             {
@@ -33,6 +38,11 @@ namespace RefundCgas
             var url = httpHelper.MakeRpcUrlPost(Program.WalletApi, "getCagsLockUtxo", out postdata);
             var result = httpHelper.HttpPost(url, postdata);
             JObject joResult = JObject.Parse(result);
+            if (joResult.ContainsKey("error"))
+            {
+                Log.Error(joResult.ToString());
+                return;
+            }
             JArray jaresult = (JArray)joResult["result"];
             for (var i = 0; i < jaresult.Count; i++)
             {
