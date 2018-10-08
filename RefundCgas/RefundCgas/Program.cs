@@ -4,7 +4,7 @@ namespace RefundCgas
 {
     class Program
     {
-        public static string WalletApi = "http://localhost:60142/api/mainnet";
+        public static string WalletApi = "https://apiwallet.nel.group/api/mainnet";
         public static string BlockApi = "https://api.nel.group/api/mainnet";
 
         static void Main(string[] args)
