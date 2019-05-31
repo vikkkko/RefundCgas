@@ -60,13 +60,13 @@ namespace RefundCgas
             tran.version = 0;
             //sign and broadcast
             //做智能合约的签名
-            byte[] sgasScript = null;
+            byte[] sgasScript = new byte[] { };
             byte[] postdata;
-            var url = httpHelper.MakeRpcUrlPost(Program.BlockApi, "getcontractstate",out postdata, new JValue("0x74f2dc36a68fdc4682034178eb2220729231db76"));
-            var result = httpHelper.HttpPost(url, postdata);
-            var _json = JObject.Parse(result);
-            var _resultv = ((JArray)_json["result"])[0];
-            sgasScript = ThinNeo.Helper.HexString2Bytes(_resultv["script"].ToString());
+            //var url = httpHelper.MakeRpcUrlPost(Program.BlockApi, "getcontractstate",out postdata, new JValue("0x74f2dc36a68fdc4682034178eb2220729231db76"));
+            //var result = httpHelper.HttpPost(url, postdata);
+            //var _json = JObject.Parse(result);
+            //var _resultv = ((JArray)_json["result"])[0];
+            //sgasScript = ThinNeo.Helper.HexString2Bytes(_resultv["script"].ToString());
             byte[] iscript = null;
             using (var sb = new ThinNeo.ScriptBuilder())
             {
@@ -78,13 +78,17 @@ namespace RefundCgas
 
             var trandata = tran.GetRawData();
             var strtrandata = ThinNeo.Helper.Bytes2HexString(trandata);
-
-            url = httpHelper.MakeRpcUrlPost(Program.BlockApi, "sendrawtransaction", out postdata, new JValue(strtrandata));
-
-            result = httpHelper.HttpPost(url, postdata);
-            Log.Common_Green("得到的结果是：" + result);
+            string input = @"{
+	            'jsonrpc': '2.0',
+                'method': 'sendrawtransaction',
+	            'params': ['#'],
+	            'id': '1'
+            }";
+            input = input.Replace("#", strtrandata);
+            var result = httpHelper.Post(Program.BlockApi, input, System.Text.Encoding.UTF8, 1);
+            JObject resultJ = JObject.Parse(result);
+            Log.Common_Green("得到的结果是：" + resultJ);
         }
-
 
         private static ThinNeo.Transaction makeTran(List<Utxo> utxos, string targetaddr, ThinNeo.Hash256 assetid, decimal sendcount, decimal extgas = 0, List<Utxo> utxos_ext = null, string extaddr = null)
         {

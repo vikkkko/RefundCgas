@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Numerics;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ThinNeo
 {
+
     public class ScriptBuilder : IDisposable
     {
         private readonly MemoryStream ms = new MemoryStream();
@@ -211,33 +212,33 @@ namespace ThinNeo
             else
                 throw new Exception("must start with:(str) or (hex) or (hexbig) or (int)");
         }
-        public ScriptBuilder EmitParamJson(JValue param)
+        public ScriptBuilder EmitParamJson(MyJson.IJsonNode param)
         {
-            if (param.Value is int)//bool 或小整数
+            if (param is MyJson.JsonNode_ValueNumber)//bool 或小整数
             {
-                var num = param;
-                if (num.Value is bool)
+                var num = param as MyJson.JsonNode_ValueNumber;
+                if (num.isBool)
                 {
-                    this.EmitPushBool((bool)num.Value);
+                    this.EmitPushBool(num.AsBool());
                 }
                 else
                 {
-                    this.EmitPushNumber((BigInteger)num.Value);
+                    this.EmitPushNumber(num.AsInt());
                 }
             }
-            else if (param.Value is JArray)
+            else if (param is MyJson.JsonNode_Array)
             {
-                var list = (JValue[])param.Value;
-                for (var i = list.Length - 1; i >= 0; i--)
+                var list = param.AsList();
+                for (var i = list.Count - 1; i >= 0; i--)
                 {
                     EmitParamJson(list[i]);
                 }
-                this.EmitPushNumber(list.Length);
+                this.EmitPushNumber(param.AsList().Count);
                 this.Emit(ThinNeo.OpCode.PACK);
             }
-            else if (param.Value is string)//复杂格式
+            else if (param is MyJson.JsonNode_ValueString)//复杂格式
             {
-                var str = (string)param.Value;
+                var str = param.AsString();
                 var bytes = GetParamBytes(str);
                 this.EmitPushBytes(bytes);
             }
@@ -254,4 +255,6 @@ namespace ThinNeo
             return ms.ToArray();
         }
     }
+
+
 }

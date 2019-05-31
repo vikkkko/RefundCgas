@@ -44,9 +44,14 @@ namespace RefundCgas
         //流模式post
         public static string Post(string url, string data, Encoding encoding, int type = 3)
         {
+            HttpWebRequest req = null;
+            HttpWebResponse rsp = null;
+            Stream reqStream = null;
+            //Stream resStream = null;
+
             try
             {
-                HttpWebRequest req = WebRequest.CreateHttp(new Uri(url));
+                req = WebRequest.CreateHttp(new Uri(url));
                 if (type == 1)
                 {
                     req.ContentType = "application/json;charset=utf-8";
@@ -65,18 +70,38 @@ namespace RefundCgas
                 req.ContinueTimeout = 60000;
 
                 byte[] postData = encoding.GetBytes(data);
-                Stream reqStream = req.GetRequestStreamAsync().Result;
+                reqStream = req.GetRequestStreamAsync().Result;
                 reqStream.Write(postData, 0, postData.Length);
-                reqStream.Dispose();
+                //reqStream.Dispose();
 
-                var rsp = (HttpWebResponse)req.GetResponseAsync().Result;
-                var result = GetResponseAsString(rsp, encoding);
+                rsp = (HttpWebResponse)req.GetResponseAsync().Result;
+                string result = GetResponseAsString(rsp, encoding);
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
+            }
+            finally
+            {
+                // 释放资源
+                if (reqStream != null)
+                {
+                    reqStream.Close();
+                    reqStream = null;
+                }
+                if (rsp != null)
+                {
+                    rsp.Close();
+                    rsp = null;
+                }
+                if (req != null)
+                {
+                    req.Abort();
+
+                    req = null;
+                }
             }
         }
 
