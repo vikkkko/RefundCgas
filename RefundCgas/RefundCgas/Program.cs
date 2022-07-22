@@ -72,7 +72,7 @@ namespace RefundCgas
                     }
                     else if (instruct == "4")
                     {
-                        test4.JustTest();
+                        //test4.JustTest();
                     }
                     else
                     {
