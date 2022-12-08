@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NEL.NEOSDK" Version="1.0.5" />
   </ItemGroup>
 
